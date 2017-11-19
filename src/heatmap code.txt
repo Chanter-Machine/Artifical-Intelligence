@@ -1,0 +1,85 @@
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.JFrame;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
+
+class EvenOddRenderer implements TableCellRenderer {
+
+	public static final DefaultTableCellRenderer DEFAULT_RENDERER = new DefaultTableCellRenderer();
+
+	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+		Component renderer = DEFAULT_RENDERER.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		Color foreground, background;
+
+		double val = Double.parseDouble(value.toString());
+		val = 255 - 255 * ((double) val / (double) GA.max);
+		Color col = new Color((int) val, 0, 0);
+		foreground = Color.WHITE;
+		background = col;
+
+		renderer.setForeground(foreground);
+		renderer.setBackground(background);
+		return renderer;
+	}
+}
+
+public class GA {
+	public static int max = 0;
+
+	public static void main(String args[]) {
+		int v = 8; // The size of the data
+		int[][] similarity = new int [v][v];
+		int[] ordering = new int [v];
+
+		
+		
+		/*
+		Here is the place to do all your implementations or calling to other methods. 
+		Note: Everything (any method ... ) has to be in only this .java file. No other .java file is accepted for submission.
+		*/
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		max = 9;  // Find the maximum value in the similarity matrix. It is needed in order to encode the colors
+		TableCreation(similarity, ordering.length, ordering); // send your data for heat map visualization.
+
+	}
+
+	public static void TableCreation(int[][] sim, int v, int[] ord) {
+
+		final Object rowData[][] = new Object[v][v];
+		for (int i = 0; i < v; i++) {
+			for (int j = 0; j < v; j++) {
+				rowData[i][j] = sim[i][j];
+			}
+		}
+		final String columnNames[] = new String[v];
+		for (int i = 0; i < v; i++) {
+			columnNames[i] = ord[i] + "";
+		}
+		final JTable table = new JTable(rowData, columnNames);
+		JScrollPane scrollPane = new JScrollPane(table);
+		table.setDefaultRenderer(Object.class, new EvenOddRenderer());
+		JFrame frame = new JFrame("Heat Map");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(scrollPane, BorderLayout.CENTER);
+		frame.setSize(50*v, 50*v);
+		frame.setVisible(true);
+	}
+
+}
