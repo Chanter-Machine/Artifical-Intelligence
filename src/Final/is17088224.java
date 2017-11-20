@@ -10,7 +10,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -22,6 +24,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
+
 
 class EvenOddRenderer implements TableCellRenderer {
 
@@ -43,7 +46,8 @@ class EvenOddRenderer implements TableCellRenderer {
 	}
 }
 
-public class is17088224 {
+public class is17088224 
+{
 	public static int max = 0;
 	public int array[][];
 	public List<int[]> list;
@@ -69,6 +73,7 @@ public class is17088224 {
 		g.iniApplication();
 		g.sortingRandom(ordering);
 		g.constructNewOrderings();
+		g.sortOrderings();
 		
 	}
 
@@ -396,6 +401,7 @@ public class is17088224 {
 				fitnessCost += list.get(ordering[i]-1)[ordering[j]-1]*Math.abs(i-j);
 			}
 		}
+		System.out.println(fitnessCost);
 		return fitnessCost;
 	}
 	
@@ -403,12 +409,47 @@ public class is17088224 {
 	{
 		for(int i=0;i<this.OrderingList.size();i++)
 		{
-			OrderingList.get(i)[this.OrderingList.size()] = fitnessCostCal(OrderingList.get(i));
+			OrderingList.get(i)[this.OrderingList.get(i).length-1] = fitnessCostCal(OrderingList.get(i));
 		}
 	}
 	
+	
+	
+   
+	
 	public void sortOrderings()
 	{
-		
+		Collections.sort(OrderingList, new Comparator<int[]>()
+		{
+		    public int compare(int arr1 [],int arr2[])
+		    {
+		    	
+                int d1=arr1[35];
+                int d2=arr2[35];
+                if(d2>d1)
+                {                   
+                    return -1;
+                }
+                else if (d1<d2)
+                {
+                    return 1;
+                }
+                return 0;
+		     }
+		});
+	
+		for(int i=0;i<this.P;i++)
+		{
+			for(int j=0;j<OrderingList.get(i).length;j++)
+			{
+				System.out.print(OrderingList.get(i)[j]+" ");
+			}
+			System.out.println();
+		}
+	}
+
+	public int compare(int[] arr1, int[] arr2)
+	{
+		return 0;
 	}
 }
