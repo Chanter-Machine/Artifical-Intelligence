@@ -72,8 +72,9 @@ public class is17088224
 		
 		g.iniApplication();
 		g.sortingRandom(ordering);
-		g.constructNewOrderings();
+		g.addfitness2Ordering();
 		g.sortOrderings();
+		g.reConstractOrderings();
 		
 	}
 
@@ -401,11 +402,11 @@ public class is17088224
 				fitnessCost += list.get(ordering[i]-1)[ordering[j]-1]*Math.abs(i-j);
 			}
 		}
-		System.out.println(fitnessCost);
+//		System.out.println(fitnessCost);
 		return fitnessCost;
 	}
 	
-	public void constructNewOrderings()
+	public void addfitness2Ordering()
 	{
 		for(int i=0;i<this.OrderingList.size();i++)
 		{
@@ -413,19 +414,15 @@ public class is17088224
 		}
 	}
 	
-	
-	
-   
-	
-	public void sortOrderings()
+	public void sortOrderings()	//sort orderings according to the fitness, from best to worst
 	{
 		Collections.sort(OrderingList, new Comparator<int[]>()
 		{
 		    public int compare(int arr1 [],int arr2[])
 		    {
 		    	
-                int d1=arr1[35];
-                int d2=arr2[35];
+                int d1=arr1[36];
+                int d2=arr2[36];
                 if(d2>d1)
                 {                   
                     return -1;
@@ -438,18 +435,27 @@ public class is17088224
 		     }
 		});
 	
-		for(int i=0;i<this.P;i++)
+//		for(int i=0;i<this.P;i++)
+//		{
+//			for(int j=0;j<OrderingList.get(i).length;j++)
+//			{
+//				System.out.print(OrderingList.get(i)[j]+" ");
+//			}
+//			System.out.println();
+//		}
+	}
+	
+	public void reConstractOrderings()	//replace the worst 1/3 orderings by using 1/3 best orderings
+	{
+		int count = this.P/3;
+		for(int i=0;i<count;i++)
 		{
-			for(int j=0;j<OrderingList.get(i).length;j++)
+			for(int j=0;j<this.OrderingList.get(i).length;j++)
 			{
-				System.out.print(OrderingList.get(i)[j]+" ");
+				OrderingList.get(this.P - 1 - i)[j] = OrderingList.get(i)[j];
 			}
-			System.out.println();
 		}
 	}
-
-	public int compare(int[] arr1, int[] arr2)
-	{
-		return 0;
-	}
+	
+	
 }
