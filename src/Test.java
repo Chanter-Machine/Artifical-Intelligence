@@ -26,15 +26,22 @@ public class Test
 		
 	//	System.out.println(factorial(36));
 		
-		for(int i=0;i<10;i++)
+//		for(int i=0;i<10;i++)
+//		{
+//			getSequence(36);
+//			System.out.println("");
+//		}
+		
+		int cp = 0;
+		Random rand = new Random();
+		for(int i=0;i<200;i++)
 		{
-			getSequence(36);
-			System.out.println("");
+			cp = rand.nextInt(8-3)+1;
+			System.out.println(cp);
 		}
 		
-		
 	}
-
+	
 	public static double factorial(int num)
 	{
 		if (num == 1)

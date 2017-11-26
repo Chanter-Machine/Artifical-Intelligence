@@ -70,12 +70,12 @@ public class is17088224
 		max = 9;  // Find the maximum value in the similarity matrix. It is needed in order to encode the colors
  //		TableCreation(g.list, ordering.length, ordering); // send your data for heat map visualization.
 		
-		g.iniApplication();
-		g.sortingRandom(ordering);
-		g.addfitness2Ordering();
-		g.sortOrderings();
-		g.reConstractOrderings();
-		
+//		g.iniApplication();
+//		g.sortingRandom(ordering);
+//		g.addfitness2Ordering();
+//		g.sortOrderings();
+//		g.reConstractOrderings();
+		g.getRandomValue();
 	}
 
 	public static void TableCreation(List<int[]> sim, int v, int[] ord) {
@@ -392,6 +392,7 @@ public class is17088224
 		}
 	}
 	
+	/*-----------------------------final submisssion------------------------------------------*/
 	public int fitnessCostCal(int []ordering)
 	{
 		int fitnessCost = 0;
@@ -406,17 +407,17 @@ public class is17088224
 		return fitnessCost;
 	}
 	
-	public void addfitness2Ordering()
+	public void addfitness2Ordering(List<int []> orderingList)
 	{
 		for(int i=0;i<this.OrderingList.size();i++)
 		{
-			OrderingList.get(i)[this.OrderingList.get(i).length-1] = fitnessCostCal(OrderingList.get(i));
+			orderingList.get(i)[this.OrderingList.get(i).length-1] = fitnessCostCal(OrderingList.get(i));
 		}
 	}
 	
-	public void sortOrderings()	//sort orderings according to the fitness, from best to worst
+	public void sortOrderings(List<int []> orderingList)	//sort orderings according to the fitness, from best to worst
 	{
-		Collections.sort(OrderingList, new Comparator<int[]>()
+		Collections.sort(orderingList, new Comparator<int[]>()
 		{
 		    public int compare(int arr1 [],int arr2[])
 		    {
@@ -445,17 +446,55 @@ public class is17088224
 //		}
 	}
 	
-	public void reConstractOrderings()	//replace the worst 1/3 orderings by using 1/3 best orderings
+	public void reConstractOrderings(List<int []> orderingList)	//replace the worst 1/3 orderings by using 1/3 best orderings
 	{
 		int count = this.P/3;
 		for(int i=0;i<count;i++)
 		{
-			for(int j=0;j<this.OrderingList.get(i).length;j++)
+			for(int j=0;j<orderingList.get(i).length;j++)
 			{
-				OrderingList.get(this.P - 1 - i)[j] = OrderingList.get(i)[j];
+				orderingList.get(this.P - 1 - i)[j] = orderingList.get(i)[j];
 			}
 		}
 	}
 	
+	public void getNewGeneration()
+	{
+		if(this.P >100 )
+		{
+			
+		}
+		else if(this.P<=100)
+		{
+			
+		}
+	}
+	
+	public void getMutation(int [] ordering1, int [] ordering2)
+	{
+		int cp, size = ordering1.length-1;
+		Random rand = new Random();
+		cp = rand.nextInt(size-3)+1;
+		
+		int [] crOrdering1 =  new int[size+1];
+		int [] crOrdering2 = new int[size+1];
+		
+		for(int i=0; i<=cp;i++)
+		{
+			crOrdering1[i] = ordering1[i];
+		}
+		copyArr(0, cp, ordering1, ordering2, crOrdering1);
+	}
+	
+	public void copyArr(int sIndex, int eIndex, int [] ordering1, int[] ordering2, int[] newOrdering)
+	{
+		//for(int i=0; i<=)
+	}
+	
+	public int getRandomValue()
+	{
+		Random rand = new Random();
+		return rand.nextInt(100)+1;
+	}
 	
 }
