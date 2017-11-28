@@ -56,8 +56,8 @@ public class is17088224
 	public int simSize;
 	
 	
-	public static void main(String args[]) {
-		
+	public static void main(String args[]) 
+	{
 		
 		is17088224 g = new is17088224();
 		g.checkRowAndCol();
@@ -67,15 +67,18 @@ public class is17088224
 		g.simSize = v;
 
 		int[] ordering = new int [v];
+		for(int i=0;i<v;i++)
+		{
+			ordering[i] = i+1;
+		}
 		max = 9;  // Find the maximum value in the similarity matrix. It is needed in order to encode the colors
- //		TableCreation(g.list, ordering.length, ordering); // send your data for heat map visualization.
+ 		 // send your data for heat map visualization.
 		
-//		g.iniApplication();
-//		g.sortingRandom(ordering);
-//		g.addfitness2Ordering();
-//		g.sortOrderings();
-//		g.reConstractOrderings();
-		g.getRandomValue();
+		g.iniApplication();
+		g.sortOrderings(g.OrderingList);
+		g.replaceWorstOrderings(g.OrderingList);;
+		TableCreation(g.list, ordering.length, ordering);
+		g.createGenerations(g.OrderingList);
 	}
 
 	public static void TableCreation(List<int[]> sim, int v, int[] ord) {
@@ -85,11 +88,6 @@ public class is17088224
 			for (int j = 0; j < v; j++) {
 				rowData[i][j] = sim.get(i)[j];
 			}
-		}
-		
-		for(int i=0; i<ord.length;i++)
-		{
-			ord[i] = i+1;
 		}
 		
 		final String columnNames[] = new String[v];
@@ -102,7 +100,7 @@ public class is17088224
 		JFrame frame = new JFrame("Heat Map");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.add(scrollPane, BorderLayout.CENTER);
-		frame.setSize(50*v, 50*v);
+		frame.setSize(19*v, 18*v);
 		frame.setVisible(true);
 	}
 
@@ -290,9 +288,10 @@ public class is17088224
 	public void iniApplication()	//enter some parameters and validate them
 	{
 		inputP();
-//		inputGen();
-//		inputCrAndMu();
-//		inputH();
+		inputGen();
+		inputCrAndMu();
+		inputH();
+		iniOrderings();
 	}
 	
 	public  double factorial(int num)
@@ -311,8 +310,9 @@ public class is17088224
 	
 	
 	
-	public void sortingRandom( int[] ordering)
+	public void iniOrderings()
 	{
+		int []ordering = new int[37];
 		this.OrderingList = new ArrayList();
 		Random random = new Random();
 		
@@ -337,12 +337,16 @@ public class is17088224
 //		for(int i=0;i<this.P;i++)
 //		{
 //				
-//	        for(int j = 0; j < ordering.length; j++)
+//	        for(int j = 0; j < ordering.length-1; j++)
 //	        {
-//	        	System.out.print(orderingList.get(i)[j]+" ");
+//	        	System.out.print(this.OrderingList.get(i)[j]+" ");
 //	        }
 //	        System.out.println("");
 //		}
+		
+		addfitness2Ordering(OrderingList);
+		
+		OrderingList = this.addfitness2Ordering(OrderingList);
 		
 		writeToFile(OrderingList);
 	}
@@ -392,7 +396,22 @@ public class is17088224
 		}
 	}
 	
-	/*-----------------------------final submisssion------------------------------------------*/
+	/*-----------------------------final submisssion part------------------------------------------*/
+	public List<int []> changeSimMatric(List<int []> oldList, int [] ordering )	//move elements according to an ordering
+	{
+		List<int []> newList = new ArrayList();
+		for(int i=0;i<oldList.size();i++)
+		{
+			int [] newArr = new int[oldList.get(i).length];
+			for(int j=0;j<newArr.length;j++)
+			{
+				newArr[j] = oldList.get(ordering[i]-1)[ordering[j]-1];
+			}
+			newList.add(newArr);
+		}
+		return newList;
+	}
+	
 	public int fitnessCostCal(int []ordering)
 	{
 		int fitnessCost = 0;
@@ -407,17 +426,19 @@ public class is17088224
 		return fitnessCost;
 	}
 	
-	public void addfitness2Ordering(List<int []> orderingList)
+	public List<int []> addfitness2Ordering(List<int []> orderings)		//calculae each fitness and add to the end of each ordering
 	{
-		for(int i=0;i<this.OrderingList.size();i++)
+		for(int i=0;i<orderings.size();i++)
 		{
-			orderingList.get(i)[this.OrderingList.get(i).length-1] = fitnessCostCal(OrderingList.get(i));
+			orderings.get(i)[orderings.get(i).length-1] = fitnessCostCal(orderings.get(i));
 		}
+		
+		return orderings;
 	}
 	
-	public void sortOrderings(List<int []> orderingList)	//sort orderings according to the fitness, from best to worst
+	public List<int[]> sortOrderings(List<int []> orderings)	//sort orderings according to the fitness, from best to worst
 	{
-		Collections.sort(orderingList, new Comparator<int[]>()
+		Collections.sort(orderings, new Comparator<int[]>()
 		{
 		    public int compare(int arr1 [],int arr2[])
 		    {
@@ -438,63 +459,250 @@ public class is17088224
 	
 //		for(int i=0;i<this.P;i++)
 //		{
-//			for(int j=0;j<OrderingList.get(i).length;j++)
+//			for(int j=0;j<orderings.get(i).length;j++)
 //			{
-//				System.out.print(OrderingList.get(i)[j]+" ");
+//				System.out.print(orderings.get(i)[j]+" ");
 //			}
 //			System.out.println();
 //		}
+		
+		return orderings;
 	}
 	
-	public void reConstractOrderings(List<int []> orderingList)	//replace the worst 1/3 orderings by using 1/3 best orderings
+	public List<int []> replaceWorstOrderings(List<int []> orderings)	//replace the worst 1/3 orderings by using 1/3 best orderings
 	{
 		int count = this.P/3;
 		for(int i=0;i<count;i++)
 		{
-			for(int j=0;j<orderingList.get(i).length;j++)
+			for(int j=0;j<orderings.get(i).length;j++)
 			{
-				orderingList.get(this.P - 1 - i)[j] = orderingList.get(i)[j];
+				orderings.get(this.P - 1 - i)[j] = orderings.get(i)[j];
 			}
 		}
+		
+		
+		
+//		System.out.println();
+//		for(int i=0;i<this.P;i++)
+//		{
+//			for(int j=0;j<orderings.get(i).length;j++)
+//			{
+//				System.out.print(orderings.get(i)[j]+" ");
+//			}
+//			System.out.println();
+//		}
+		
+		return orderings;
 	}
+
 	
-	public void getNewGeneration()
+	public int getRandomValue(int begin, int end)		//get a random value between [1-100]
 	{
-		if(this.P >100 )
-		{
-			
-		}
-		else if(this.P<=100)
-		{
-			
-		}
+		Random rand = new Random();
+		return rand.nextInt(end)+begin;
 	}
 	
-	public void getMutation(int [] ordering1, int [] ordering2)
+	public int[] get2RandowValue(int begin, int end)
+	{
+		int []tmp = new int[2];
+		Random rand1 = new Random();
+		Random rand2 = new Random();
+		do
+		{
+			tmp[0] = rand1.nextInt(end)+begin;
+			tmp[1] = rand2.nextInt(end)+begin;
+		}while(tmp[0]==tmp[1]);
+		return tmp;
+	}
+	
+	public String decideCrMuGe( int restPopulation)		//judge new ordering comes from Mutation, Cross-over or Generate
+	{
+		
+		if(restPopulation>1)
+		{
+			int value = getRandomValue(1,100);
+			if(value>=1 && value<=this.Cr)
+			{
+				return "C";
+			}
+			else if(value>this.Cr && value<= this.Cr+this.Mu)
+			{
+				return "M";
+			}
+			else if(value> this.Cr+this.Mu && value<=100)
+			{
+				return "G";
+			}
+		}
+		
+		else if(restPopulation == 1)
+		{
+			int value = getRandomValue(this.Cr+1,100);
+			if(value>this.Cr && value<= this.Cr+this.Mu)
+			{
+				return "M";
+			}
+			else if(value> this.Cr+this.Mu && value<=100)
+			{
+				return "G";
+			}
+		}
+		
+		return "Again";
+	}
+	
+	public List<int []> createNewGeneration(List<int []> orderings)		//create new Generation of orderings
+	{
+		int restPopulation = orderings.size();
+		List<int []> newOrderings = new ArrayList();
+		int tmpInd1, tmpInd2;
+		
+		while(!orderings.isEmpty())		//judge origin ordering is not empty
+		{
+			if(decideCrMuGe(restPopulation) == "C")
+			{
+				do
+				{
+					tmpInd1 = getRandomValue(0, restPopulation);
+					tmpInd2 = getRandomValue(0, restPopulation);
+				}while(tmpInd2 == tmpInd1);
+				
+				newOrderings = getCrossover(orderings.get(tmpInd1), orderings.get(tmpInd2), newOrderings);
+				
+				if(tmpInd1>tmpInd2)
+				{
+					orderings.remove(tmpInd1);
+					orderings.remove(tmpInd2);
+				}
+				else
+				{
+					orderings.remove(tmpInd2);
+					orderings.remove(tmpInd1);
+				}
+				
+				restPopulation = orderings.size();
+			}
+			else if(decideCrMuGe(restPopulation) == "M")
+			{										
+				int randomIndex = getRandomValue(0, restPopulation);
+				newOrderings = getMutation(orderings.get(randomIndex), newOrderings);
+				orderings.remove(randomIndex);
+				restPopulation = orderings.size();
+			}
+			else if(decideCrMuGe(restPopulation) == "G")
+			{
+				int randomIndex = getRandomValue(0, restPopulation);
+				newOrderings.add(orderings.get(randomIndex));
+				orderings.remove(randomIndex);
+				restPopulation -= 1;
+			}
+		}
+		newOrderings = addfitness2Ordering(newOrderings);
+		newOrderings = sortOrderings(newOrderings);
+		newOrderings = replaceWorstOrderings(newOrderings);
+		return newOrderings;
+	}
+
+/*----------------------create two new orderings from crossover-----------------------------------------------*/
+	public List<int[]> getCrossover(int [] ordering1, int [] ordering2, List<int[]> orderings)
 	{
 		int cp, size = ordering1.length-1;
 		Random rand = new Random();
-		cp = rand.nextInt(size-3)+1;
-		
+		cp = rand.nextInt(size-3)+2;		//get Mutation point
+		ArrayList al1;
+		ArrayList al2;
+//		System.out.println(cp);
 		int [] crOrdering1 =  new int[size+1];
 		int [] crOrdering2 = new int[size+1];
+		int [] tmp = new int[size+1];
 		
-		for(int i=0; i<=cp;i++)
+		tmp = ordering1;
+		crOrdering1 = copyArr(cp, ordering1, ordering2, crOrdering1);
+		crOrdering2 = copyArr(cp, ordering2, ordering1, crOrdering2);
+		
+		al1 = findRepeatElement(crOrdering1);
+		al2 = findRepeatElement(crOrdering2);
+		if(!al1.isEmpty())
 		{
-			crOrdering1[i] = ordering1[i];
+			for(int i=0;i<al1.size();i++)
+			{
+				int tmpInt = crOrdering1[(int) al1.get(i)];
+				crOrdering1[(int) al1.get(i)] = crOrdering2[(int) al2.get(al1.size()-1-i)];
+				crOrdering2[(int) al2.get(al1.size()-1-i)] = tmpInt;
+			}
 		}
-		copyArr(0, cp, ordering1, ordering2, crOrdering1);
+		
+		orderings.add(crOrdering1);
+		orderings.add(crOrdering2);
+		return orderings;
 	}
 	
-	public void copyArr(int sIndex, int eIndex, int [] ordering1, int[] ordering2, int[] newOrdering)
+	
+	public int[] copyArr(int cp, int [] ordering1, int[] ordering2, int[] newOrdering)		//the process of mutation, copy a part of orderings to another ordering
 	{
-		//for(int i=0; i<=)
+		for(int i=0; i<cp; i++)
+		{
+			newOrdering[i] = ordering1[i];
+		}
+		for(int i=cp;i<ordering1.length-1;i++)
+		{
+			newOrdering[i] = ordering2[i];
+		}
+		return newOrdering;
 	}
 	
-	public int getRandomValue()
+	public ArrayList findRepeatElement(int[]ordering)	//create a list to record index of which value has repeated 
 	{
-		Random rand = new Random();
-		return rand.nextInt(100)+1;
+		ArrayList al = new ArrayList();
+		for(int i=0;i<ordering.length-1;i++)
+		{
+			for(int j=i+1;j<ordering.length;j++)
+			{
+				if(ordering[i]==ordering[j])
+				{			
+					al.add(i);
+				}
+
+			}
+		}
+		return al;
 	}
 	
+/*----------------------Create an new Ordering from Mutation--------------------------------------------*/
+	
+	public List<int[]> getMutation(int [] ordering, List<int[]> newOrderings)
+	{
+		int index1 = get2RandowValue(0, ordering.length-1)[0];
+		int index2 = get2RandowValue(0, ordering.length-1)[1];
+		int tmp = 0;
+		
+		tmp = ordering[index1];
+		ordering[index1] = ordering[index2];
+		ordering[index2] = tmp;
+		
+		newOrderings.add(ordering);
+		return newOrderings;
+	}
+		
+/*-----------Create each generation of orderings-----------------------*/
+	public List<int[]> createGenerations(List<int[]> orderings)
+	{
+		
+		for(int k=0;k<this.Gen;k++)
+		{
+			
+			orderings = this.createNewGeneration(orderings);
+			if(k==this.H)
+			{
+				List<int []> newlist = this.changeSimMatric(this.list, orderings.get(0));
+				TableCreation(newlist, this.simSize, orderings.get(0));
+			}
+		}
+			
+		List<int []> newlist = this.changeSimMatric(this.list, orderings.get(0));
+		TableCreation(newlist, this.simSize, orderings.get(0));
+		
+		return orderings;
+	}
+
 }
